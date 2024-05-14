@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImp implements OrderService{
@@ -66,32 +68,60 @@ public class OrderServiceImp implements OrderService{
             orderItemEntity savedOrderItem = orderItemRepository.save(orderItem);
             orderItems.add(savedOrderItem);
         }
+        Long totalPrice = cartService.calculateCartTotal(cart);
 
         newOrder.setItems(orderItems);
-        newOrder.setTotalPrice(cart.getTotalPrice()); //if not working check later, different method used 7.36
+        newOrder.setTotalPrice(totalPrice);
 
+        orderEntity savedOrder = orderRepository.save(newOrder);
+        shop.getOrders().add(savedOrder);
 
-        return null;
+        return newOrder;
     }
 
     @Override
     public orderEntity updateOrder(Long orderId, String orderStatus) throws Exception {
-        return null;
+        orderEntity order = findOrderById(orderId);
+        if(orderStatus.equals("OUT_FOR_DELIVERY")
+                || orderStatus.equals("DELIVERED")
+                || orderStatus.equals("COMPLETED")
+                || orderStatus.equals("CANCELLED")
+                || orderStatus.equals("PENDING")){
+            order.setStatus(orderStatus);
+            return orderRepository.save(order);
+        }
+        throw new Exception("Please select a valid order status.");
     }
 
     @Override
     public void cancelOrder(Long orderId) throws Exception {
-
+        orderEntity order = findOrderById(orderId);
+        orderRepository.deleteById(orderId);
     }
 
     @Override
     public List<orderEntity> getUsersOrder(Long userId) throws Exception {
-        return null;
+        return orderRepository.findByUserId(userId);
     }
 
     @Override
     public List<orderEntity> getShopsOrder(Long shopId, String orderStatus) throws Exception {
-        return null;
+        List<orderEntity> orders = orderRepository.findByShopId(shopId);
+        if(orderStatus != null){
+            orders = orders.stream()
+                    .filter(order -> order.getStatus().equals(orderStatus))
+                    .collect(Collectors.toList());
+        }
+        return orders;
+    }
+
+    @Override
+    public orderEntity findOrderById(Long orderId) throws Exception {
+        Optional<orderEntity> optionalOrder = orderRepository.findById(orderId);
+        if(optionalOrder.isEmpty()){
+            throw new Exception("Order not found.");
+        }
+        return optionalOrder.get();
     }
 
 }

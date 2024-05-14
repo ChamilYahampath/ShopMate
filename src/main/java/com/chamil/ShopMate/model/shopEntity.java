@@ -42,4 +42,6 @@ public class shopEntity {
 
     private boolean status;
 
+    @OneToMany
+    private List<orderEntity> orders;
 }
