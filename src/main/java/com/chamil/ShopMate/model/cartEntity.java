@@ -25,5 +25,5 @@ public class cartEntity {
     private int totalItems;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<cartItemEntity> item = new ArrayList<>();
+    private List<cartItemEntity> items = new ArrayList<>();
 }
