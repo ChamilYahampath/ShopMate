@@ -18,5 +18,7 @@ public interface OrderService {
 
     public List<orderEntity> getShopsOrder(Long shopId, String orderStatus) throws Exception;
 
+    public List<orderEntity> getAllOrders() throws Exception;
+
     public orderEntity findOrderById(Long orderId) throws Exception;
 }

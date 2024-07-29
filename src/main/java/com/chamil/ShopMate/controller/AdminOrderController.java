@@ -2,7 +2,6 @@ package com.chamil.ShopMate.controller;
 
 import com.chamil.ShopMate.model.orderEntity;
 import com.chamil.ShopMate.model.userEntity;
-import com.chamil.ShopMate.request.OrderRequest;
 import com.chamil.ShopMate.service.OrderService;
 import com.chamil.ShopMate.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +40,16 @@ public class AdminOrderController {
     ) throws Exception {
         userEntity user = userService.findUserByJwtToken(jwt);
         orderEntity orders = orderService.updateOrder(id, order_status);
+
+        return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
+
+    @GetMapping("/order")
+    public ResponseEntity<List<orderEntity>> getAllOrders(
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        userEntity user = userService.findUserByJwtToken(jwt);
+        List<orderEntity> orders = orderService.getAllOrders();
 
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }

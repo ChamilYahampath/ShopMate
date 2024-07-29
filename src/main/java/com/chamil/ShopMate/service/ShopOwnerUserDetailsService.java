@@ -28,7 +28,7 @@ public class ShopOwnerUserDetailsService implements UserDetailsService {
         }
 
         userRole role = user.getRole();
-        if(role == null)role=userRole.role_shopOwner;
+
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         authorities.add(new SimpleGrantedAuthority(role.toString()));

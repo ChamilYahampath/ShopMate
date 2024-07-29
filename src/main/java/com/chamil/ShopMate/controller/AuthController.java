@@ -51,6 +51,9 @@ public class AuthController {
 
         userEntity createUser = new userEntity();
         createUser.setEmail(user.getEmail());
+        createUser.setAddress(user.getAddress());
+        createUser.setContact(user.getContact());
+        createUser.setNic(user.getNic());
         createUser.setName(user.getName());
         createUser.setRole(user.getRole());
         createUser.setPassword(passwordEncoder.encode(user.getPassword()));

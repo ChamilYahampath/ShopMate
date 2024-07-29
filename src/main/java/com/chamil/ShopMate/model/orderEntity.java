@@ -31,22 +31,13 @@ public class orderEntity {
 
     private Date orderDate;
 
-    private String deliveryDate;
-
     private String status;
 
     @ManyToOne
     private addressEntity deliveryAddress;
 
-    private String deliveryDriver;
-
-    private String deliveryDriverContact;
-
-    private String deliveryDriverVehicleNumber;
-
     @OneToMany
     private List<orderItemEntity> items;
 
-    //private String paymentMethod;
 
 }

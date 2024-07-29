@@ -51,9 +51,11 @@ public class OrderServiceImp implements OrderService{
         orderEntity newOrder = new orderEntity();
         newOrder.setShopOwner(user);
         newOrder.setShop(shop);
+        newOrder.setDescription(order.getDescription());
         newOrder.setDeliveryAddress(savedAddress);
         newOrder.setStatus("PENDING");
         newOrder.setOrderDate(new Date());
+
 
         cartEntity cart = cartService.findCartByUserId(user.getId());
 
@@ -69,12 +71,16 @@ public class OrderServiceImp implements OrderService{
             orderItems.add(savedOrderItem);
         }
         Long totalPrice = cartService.calculateCartTotal(cart);
+        int totalItems = cartService.calculateCartTotalItems(cart);
 
         newOrder.setItems(orderItems);
         newOrder.setTotalPrice(totalPrice);
+        newOrder.setTotalItems(totalItems);
 
         orderEntity savedOrder = orderRepository.save(newOrder);
-        shop.getOrders().add(savedOrder);
+        //shop.getOrders().add(savedOrder);
+
+      //  cartService.clearCart(user.getId());
 
         return newOrder;
     }
@@ -101,7 +107,7 @@ public class OrderServiceImp implements OrderService{
 
     @Override
     public List<orderEntity> getUsersOrder(Long userId) throws Exception {
-        return orderRepository.findByUserId(userId);
+        return orderRepository.findByShopOwnerId(userId);
     }
 
     @Override
@@ -113,6 +119,11 @@ public class OrderServiceImp implements OrderService{
                     .collect(Collectors.toList());
         }
         return orders;
+    }
+
+    @Override
+    public List<orderEntity> getAllOrders() throws Exception {
+        return orderRepository.findAll();
     }
 
     @Override

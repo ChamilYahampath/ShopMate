@@ -1,10 +1,13 @@
 package com.chamil.ShopMate.service;
 
+import com.chamil.ShopMate.dto.ItemDTO;
+import com.chamil.ShopMate.dto.ResponseDTO;
 import com.chamil.ShopMate.model.categoryEntity;
 import com.chamil.ShopMate.model.itemEntity;
 import com.chamil.ShopMate.repository.ItemRepository;
 import com.chamil.ShopMate.request.CreateItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,16 +20,27 @@ public class ItemServiceImp implements ItemService{
     private ItemRepository itemRepository;
 
     @Override
-    public itemEntity createItem(CreateItemRequest req, categoryEntity category) {
-        itemEntity item = new itemEntity();
-        item.setItemCategory(category);
-        item.setDescription(req.getDescription());
-        item.setTitle(req.getName());
-        item.setPrice(req.getPrice());
-        item.setQuantity(req.getQuantity());
-        item.setImages(req.getImages());
-
-        return itemRepository.save(item);
+    public ResponseDTO createItem(CreateItemRequest req, categoryEntity category) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            itemEntity item = new itemEntity();
+            item.setItemCategory(category);
+            item.setDescription(req.getDescription());
+            item.setName(req.getName());
+            item.setPrice(req.getPrice());
+            item.setQuantity(req.getQuantity());
+            item.setImages(req.getImages());
+            itemRepository.save(item);
+            responseDTO.setCode("00");
+            responseDTO.setMessage("Saved Successfully");
+            responseDTO.setStatus(HttpStatus.ACCEPTED);
+        }
+        catch(Exception e){
+            responseDTO.setCode("10");
+            responseDTO.setContent("Internal server Error");
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseDTO;
     }
 
     @Override
@@ -54,5 +68,10 @@ public class ItemServiceImp implements ItemService{
         itemEntity item = findItemById(itemId);
         item.setAvailable(!item.isAvailable());
         return itemRepository.save(item);
+    }
+
+    @Override
+    public List<itemEntity> getAllItems() {
+        return itemRepository.findAll();
     }
 }

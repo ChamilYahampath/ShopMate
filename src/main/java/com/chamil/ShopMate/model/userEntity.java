@@ -27,7 +27,7 @@ public class userEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    private userRole role;
+    private userRole role=userRole.role_shopOwner;
 
     private String address;
 
@@ -39,8 +39,6 @@ public class userEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "shopOwner") //didn't create separate table for mapping
     private List<orderEntity> orders = new ArrayList<>();
 
-    @OneToMany
-    private List<itemEntity> items = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) //if remove the user, addresses will not delete
     private List<addressEntity> addresses = new ArrayList<>();

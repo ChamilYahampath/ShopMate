@@ -33,4 +33,15 @@ public class ItemController {
 
         return new ResponseEntity<>(items, HttpStatus.CREATED);
     }
+
+    @GetMapping()
+    public ResponseEntity<List<itemEntity>> getAllItems(
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        userEntity user = userService.findUserByJwtToken(jwt);
+
+        List<itemEntity> items = itemService.getAllItems();
+
+        return new ResponseEntity<>(items, HttpStatus.CREATED);
+    }
 }

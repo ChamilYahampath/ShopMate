@@ -1,12 +1,17 @@
 package com.chamil.ShopMate.service;
 
+import com.chamil.ShopMate.dto.AddressDTO;
+import com.chamil.ShopMate.dto.ResponseDTO;
+import com.chamil.ShopMate.dto.ShopDTO;
 import com.chamil.ShopMate.model.addressEntity;
+import com.chamil.ShopMate.model.itemEntity;
 import com.chamil.ShopMate.model.shopEntity;
 import com.chamil.ShopMate.model.userEntity;
 import com.chamil.ShopMate.repository.AddressRepository;
 import com.chamil.ShopMate.repository.ShopRepository;
 import com.chamil.ShopMate.request.CreateShopRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -103,13 +108,39 @@ public class ShopServiceImp implements ShopService{
     }
 
     @Override
-    public shopEntity getShopByUserId(Long userId) throws Exception {
-        shopEntity shop = shopRepository.findByOwnerId(userId);
+    public ResponseDTO getShopByUserId(Long userId) {
+        ResponseDTO responseDTO = new ResponseDTO();
 
-        if(shop==null){
-            throw new Exception("Shop not found with owner id: "+userId);
+        try{
+            shopEntity shop = shopRepository.findByOwnerId(userId);
+            ShopDTO shopDTO = new ShopDTO();
+            shopDTO.setId(shop.getId());
+            shopDTO.setName(shop.getName());
+            shopDTO.setContact(shop.getContact());
+            shopDTO.setDescription(shop.getDescription());
+            shopDTO.setStatus(shop.isStatus());
+            shopDTO.setOwner(shop.getOwner());
+            shopDTO.setOpeningHours(shop.getOpeningHours());
+            AddressDTO addressDTO = new AddressDTO();
+            addressEntity addressEntity = shop.getAddress();
+            addressDTO.setId(addressEntity.getId());
+            addressDTO.setCity(addressEntity.getCity());
+            addressDTO.setStreet(addressEntity.getStreet());
+            addressDTO.setProvince(addressEntity.getProvince());
+            addressDTO.setPostalCode(addressEntity.getPostalCode());
+            shopDTO.setAddress(addressDTO);
+            responseDTO.setContent(shopDTO);
+            responseDTO.setCode("00");
+            responseDTO.setMessage("Saved Successfully");
+            responseDTO.setStatus(HttpStatus.ACCEPTED);
         }
-        return shop;
+        catch (Exception e){
+            responseDTO.setCode("10");
+            responseDTO.setContent("Internal server Error");
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return responseDTO;
     }
 
     @Override

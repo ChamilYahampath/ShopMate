@@ -13,10 +13,11 @@ public interface CartService {
     public cartEntity removeCartItem(Long cartItemId, String jwt) throws Exception;
 
     public Long calculateCartTotal(cartEntity cart) throws Exception;
-
+    public int calculateCartTotalItems(cartEntity cart) throws Exception;
     public cartEntity findCartById(Long id) throws Exception;
 
     public cartEntity findCartByUserId(Long userId) throws Exception;
 
     public cartEntity clearCart(Long userId) throws Exception;
+
 }

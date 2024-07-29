@@ -26,10 +26,10 @@ public class AppConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(Authorize -> Authorize
-                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN","role_companyOwner","EMPLOYEE","DELIVERY_DRIVER")
+                        .requestMatchers("/api/admin/**").authenticated()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
-                ).addFilterBefore((Filter) new JwtTokenValidator(), BasicAuthenticationFilter.class)
+                ).addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
@@ -46,7 +46,7 @@ public class AppConfig {
 
                 corsConfiguration.setAllowedOrigins(Arrays.asList(
                         "http://localhost:3000",
-                        "http://localhost:8080"
+                        "http://localhost:8081"
                 ));
                 corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
                 corsConfiguration.setAllowCredentials(true);

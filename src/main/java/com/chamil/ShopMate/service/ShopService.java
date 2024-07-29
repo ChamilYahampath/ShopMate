@@ -1,5 +1,6 @@
 package com.chamil.ShopMate.service;
 
+import com.chamil.ShopMate.dto.ResponseDTO;
 import com.chamil.ShopMate.model.shopEntity;
 import com.chamil.ShopMate.model.userEntity;
 import com.chamil.ShopMate.request.CreateShopRequest;
@@ -20,7 +21,7 @@ public interface ShopService {
 
     public shopEntity findShopById(Long shopId) throws Exception;
 
-    public shopEntity getShopByUserId(Long userId) throws Exception;
+    public ResponseDTO getShopByUserId(Long userId) throws Exception;
 
     public shopEntity updateShopStatus(Long shopId) throws Exception;
 

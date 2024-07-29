@@ -1,5 +1,6 @@
 package com.chamil.ShopMate.controller;
 
+import com.chamil.ShopMate.dto.ResponseDTO;
 import com.chamil.ShopMate.model.categoryEntity;
 import com.chamil.ShopMate.model.itemEntity;
 import com.chamil.ShopMate.model.userEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/admin/category")
 public class CategoryController {
 
@@ -28,11 +30,11 @@ public class CategoryController {
             @RequestBody categoryEntity category,
             @RequestHeader("Authorization") String jwt
     ) throws Exception {
-        userEntity user = userService.findUserByJwtToken(jwt);
+        //userEntity user = userService.findUserByJwtToken(jwt);
 
-        categoryEntity createCategory = categoryService.createCategory(category.getName());
+        ResponseDTO responseDTO = categoryService.createCategory(category.getName());
 
-        return new ResponseEntity<>(createCategory, HttpStatus.CREATED);
+        return new ResponseEntity(responseDTO,responseDTO.getStatus());
     }
 
     @DeleteMapping("/{id}")
@@ -40,7 +42,7 @@ public class CategoryController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String jwt
     ) throws Exception {
-        userEntity user = userService.findUserByJwtToken(jwt);
+        //userEntity user = userService.findUserByJwtToken(jwt);
 
         categoryService.deleteCategory(id);
 
@@ -70,6 +72,17 @@ public class CategoryController {
         userEntity user = userService.findUserByJwtToken(jwt);
 
         List<categoryEntity> categories = categoryService.searchCategory(keyword);
+
+        return new ResponseEntity<>(categories, HttpStatus.CREATED);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<categoryEntity>> getAllCategories(
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        userEntity user = userService.findUserByJwtToken(jwt);
+
+        List<categoryEntity> categories = categoryService.getAllCategories();
 
         return new ResponseEntity<>(categories, HttpStatus.CREATED);
     }

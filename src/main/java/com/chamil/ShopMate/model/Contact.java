@@ -9,5 +9,6 @@ public class Contact {
     private String mobile;
     private String facebook;
     private String instagram;
-
+    private String linkedIn;
+    private String twitter;
 }

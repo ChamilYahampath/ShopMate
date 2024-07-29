@@ -8,6 +8,7 @@ public class OrderRequest {
 
     private Long shopId;
     private addressEntity deliveryAddress;
+    private String description;
 
     //private String orderStatus;
     //private String orderDate;

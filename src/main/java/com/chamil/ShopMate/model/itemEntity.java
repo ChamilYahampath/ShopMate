@@ -13,16 +13,16 @@ import java.util.List;
 @AllArgsConstructor
 public class itemEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id; // is using of Long fine?
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String title;
+    private String name;
 
     private String description;
 
-    private Long price; // is using of Long fine?
+    private Long price;
 
-    private int quantity; //check this, is datatype Long or double needed?
+    private int quantity;
 
     @ManyToOne
     private categoryEntity itemCategory;

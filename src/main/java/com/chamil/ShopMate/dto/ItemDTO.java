@@ -4,12 +4,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class itemDto {
+public class ItemDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

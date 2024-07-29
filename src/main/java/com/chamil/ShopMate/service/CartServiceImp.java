@@ -37,7 +37,7 @@ public class CartServiceImp implements CartService{
 
         itemEntity item = itemService.findItemById(req.getItemId());
 
-        cartEntity cart = cartRepository.findCartByUserId(user.getId());
+        cartEntity cart = cartRepository.findCartByShopOwnerId(user.getId());
 
         for(cartItemEntity cartItem : cart.getItems()){
             if(cartItem.getItem().equals(item)){
@@ -77,7 +77,7 @@ public class CartServiceImp implements CartService{
     public cartEntity removeCartItem(Long cartItemId, String jwt) throws Exception {
         userEntity user = userService.findUserByJwtToken(jwt);
 
-        cartEntity cart = cartRepository.findCartByUserId(user.getId());
+        cartEntity cart = cartRepository.findCartByShopOwnerId(user.getId());
 
         Optional<cartItemEntity> cartItemOptional = cartItemRepository.findById(cartItemId);
         if(cartItemOptional.isEmpty()){
@@ -86,8 +86,11 @@ public class CartServiceImp implements CartService{
 
         cartItemEntity cartItem = cartItemOptional.get();
 
-        cart.getItems().remove(cartItem);
 
+        cart.getItems().remove(cartItem);
+        cartItemRepository.delete(cartItem);
+        cart.setTotalPrice(calculateCartTotal(cart));
+        cart.setTotalItems(calculateCartTotalItems(cart));
         return cartRepository.save(cart);
     }
 
@@ -97,6 +100,15 @@ public class CartServiceImp implements CartService{
 
         for(cartItemEntity cartItem : cart.getItems()){
             total += cartItem.getItem().getPrice()*cartItem.getQuantity();
+        }
+        return total;
+    }
+    @Override
+    public int calculateCartTotalItems(cartEntity cart) throws Exception {
+        int total = 0;
+
+        for(cartItemEntity cartItem : cart.getItems()){
+            total += 1;
         }
         return total;
     }
@@ -112,15 +124,18 @@ public class CartServiceImp implements CartService{
 
     @Override
     public cartEntity findCartByUserId(Long userId) throws Exception {
-        cartEntity cart = cartRepository.findCartByUserId(userId);
+        cartEntity cart = cartRepository.findCartByShopOwnerId(userId);
         cart.setTotalPrice(calculateCartTotal(cart));
+        cart.setTotalItems(calculateCartTotalItems(cart));
         return cart;
     }
 
     @Override
     public cartEntity clearCart(Long userId) throws Exception {
-        cartEntity cart = cartRepository.findCartByUserId(userId);
+        cartEntity cart = cartRepository.findCartByShopOwnerId(userId);
         cart.getItems().clear();
+
         return cartRepository.save(cart);
     }
+
 }

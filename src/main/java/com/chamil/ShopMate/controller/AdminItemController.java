@@ -1,5 +1,6 @@
 package com.chamil.ShopMate.controller;
 
+import com.chamil.ShopMate.dto.ResponseDTO;
 import com.chamil.ShopMate.model.itemEntity;
 import com.chamil.ShopMate.model.userEntity;
 import com.chamil.ShopMate.request.CreateItemRequest;
@@ -26,11 +27,11 @@ public class AdminItemController {
             @RequestBody CreateItemRequest req,
             @RequestHeader("Authorization") String jwt
     ) throws Exception {
-        userEntity user = userService.findUserByJwtToken(jwt);
+        //userEntity user = userService.findUserByJwtToken(jwt);
 
-        itemEntity item = itemService.createItem(req, req.getCategory());
+        ResponseDTO responseDTO = itemService.createItem(req, req.getCategory());
 
-        return new ResponseEntity<>(item, HttpStatus.CREATED);
+        return new ResponseEntity(responseDTO,responseDTO.getStatus());
     }
 
     @DeleteMapping("/{id}")

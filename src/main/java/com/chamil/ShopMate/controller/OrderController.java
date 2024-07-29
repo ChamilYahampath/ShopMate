@@ -1,6 +1,5 @@
 package com.chamil.ShopMate.controller;
 
-import com.chamil.ShopMate.model.categoryEntity;
 import com.chamil.ShopMate.model.orderEntity;
 import com.chamil.ShopMate.model.userEntity;
 import com.chamil.ShopMate.request.OrderRequest;
