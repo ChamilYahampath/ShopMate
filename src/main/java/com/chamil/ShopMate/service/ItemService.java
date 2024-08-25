@@ -11,6 +11,8 @@ public interface ItemService {
 
     public ResponseDTO createItem(CreateItemRequest req, categoryEntity category);
 
+    public itemEntity updateItem(Long itemId, CreateItemRequest updatedItem) throws Exception;
+
     void deleteItem(Long itemId) throws Exception;
 
     public List<itemEntity> searchItem(String keyword);

@@ -19,5 +19,4 @@ public interface CartService {
     public cartEntity findCartByUserId(Long userId) throws Exception;
 
     public cartEntity clearCart(Long userId) throws Exception;
-
 }

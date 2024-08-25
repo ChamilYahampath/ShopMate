@@ -8,6 +8,7 @@ import com.chamil.ShopMate.repository.CartItemRepository;
 import com.chamil.ShopMate.repository.CartRepository;
 import com.chamil.ShopMate.repository.ItemRepository;
 import com.chamil.ShopMate.request.AddCartItemRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -130,12 +131,13 @@ public class CartServiceImp implements CartService{
         return cart;
     }
 
+    @Transactional
     @Override
     public cartEntity clearCart(Long userId) throws Exception {
         cartEntity cart = cartRepository.findCartByShopOwnerId(userId);
-        cart.getItems().clear();
-
-        return cartRepository.save(cart);
+        System.out.println("++++"+ cart.getId());
+        cartRepository.clearCartByCartId(cart.getId());
+        return null;
     }
 
 }

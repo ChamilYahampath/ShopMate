@@ -55,8 +55,10 @@ public class FeedbackServiceImp implements FeedbackService {
         return null;
     }
 
+
     @Override
     public List<feedbackEntity> getAllFeedbacks() {
         return feedbackRepository.findAll();
     }
+
 }

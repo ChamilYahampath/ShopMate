@@ -44,6 +44,29 @@ public class ItemServiceImp implements ItemService{
     }
 
     @Override
+    public itemEntity updateItem(Long itemId, CreateItemRequest updatedItem) throws Exception {
+        itemEntity item = findItemById(itemId);
+
+        if (updatedItem.getName() != null && !updatedItem.getName().isEmpty()) {
+            item.setName(updatedItem.getName());
+        }
+        if (updatedItem.getDescription() != null && !updatedItem.getDescription().isEmpty()) {
+            item.setDescription(updatedItem.getDescription());
+        }
+        if (updatedItem.getPrice() != 0) {
+            item.setPrice(updatedItem.getPrice());
+        }
+        if (updatedItem.getQuantity() != 0) {
+            item.setQuantity(item.getQuantity() + updatedItem.getQuantity());
+        }
+        if (updatedItem.getImages() != null && !updatedItem.getImages().isEmpty()) {
+            item.setImages(updatedItem.getImages());
+        }
+
+        return itemRepository.save(item);
+    }
+
+    @Override
     public void deleteItem(Long itemId) throws Exception {
         itemEntity item = findItemById(itemId);
         itemRepository.delete(item);
@@ -65,10 +88,15 @@ public class ItemServiceImp implements ItemService{
 
     @Override
     public itemEntity updateAvailabilityStatus(Long itemId) throws Exception {
-        itemEntity item = findItemById(itemId);
-        item.setAvailable(!item.isAvailable());
-        return itemRepository.save(item);
+        return null;
     }
+
+//    @Override
+//    public itemEntity updateAvailabilityStatus(Long itemId) throws Exception {
+//        itemEntity item = findItemById(itemId);
+//        item.setAvailable(!item.isAvailable());
+//        return itemRepository.save(item);
+//    }
 
     @Override
     public List<itemEntity> getAllItems() {

@@ -1,5 +1,6 @@
 package com.chamil.ShopMate.controller;
 
+import com.chamil.ShopMate.dto.ResponseDTO;
 import com.chamil.ShopMate.model.orderEntity;
 import com.chamil.ShopMate.model.userEntity;
 import com.chamil.ShopMate.request.OrderRequest;
@@ -27,9 +28,9 @@ public class OrderController {
             @RequestHeader("Authorization") String jwt
     ) throws Exception {
         userEntity user = userService.findUserByJwtToken(jwt);
-        orderEntity createOrder = orderService.createOrder(req, user);
+        ResponseDTO responseDTO = orderService.createOrder(req, user);
 
-        return new ResponseEntity<>(createOrder, HttpStatus.OK);
+        return new ResponseEntity(responseDTO,responseDTO.getStatus());
     }
 
     @GetMapping("/order/user")

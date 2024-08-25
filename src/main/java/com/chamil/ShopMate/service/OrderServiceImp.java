@@ -1,12 +1,11 @@
 package com.chamil.ShopMate.service;
 
+import com.chamil.ShopMate.dto.ResponseDTO;
 import com.chamil.ShopMate.model.*;
-import com.chamil.ShopMate.repository.AddressRepository;
-import com.chamil.ShopMate.repository.OrderItemRepository;
-import com.chamil.ShopMate.repository.OrderRepository;
-import com.chamil.ShopMate.repository.UserRepository;
+import com.chamil.ShopMate.repository.*;
 import com.chamil.ShopMate.request.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class OrderServiceImp implements OrderService{
+public class OrderServiceImp implements OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
@@ -36,53 +35,79 @@ public class OrderServiceImp implements OrderService{
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private ItemRepository itemRepository;
+
     @Override
-    public orderEntity createOrder(OrderRequest order, userEntity user) throws Exception {
-        addressEntity shippingAddress = order.getDeliveryAddress();
-        addressEntity savedAddress = addressRepository.save(shippingAddress);
+    public ResponseDTO createOrder(OrderRequest order, userEntity user) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            addressEntity shippingAddress = order.getDeliveryAddress();
+            addressEntity savedAddress = addressRepository.save(shippingAddress);
 
-        if(!user.getAddresses().contains(savedAddress)){
-            user.getAddresses().add(savedAddress);
-            userRepository.save(user);
+            if (!user.getAddresses().contains(savedAddress)) {
+                user.getAddresses().add(savedAddress);
+                userRepository.save(user);
+            }
+
+            shopEntity shop = shopService.findShopById(order.getShopId());
+
+            orderEntity newOrder = new orderEntity();
+            newOrder.setShopOwner(user);
+            newOrder.setShop(shop);
+            newOrder.setDescription(order.getDescription());
+            newOrder.setDeliveryAddress(savedAddress);
+            newOrder.setStatus("PENDING");
+            newOrder.setOrderDate(new Date());
+
+            cartEntity cart = cartService.findCartByUserId(user.getId());
+
+            List<orderItemEntity> orderItems = new ArrayList<>();
+            for (cartItemEntity cartItem : cart.getItems()) {
+                orderItemEntity orderItem = new orderItemEntity();
+                orderItem.setItem(cartItem.getItem());
+                orderItem.setQuantity(cartItem.getQuantity());
+                orderItem.setTotalPrice(cartItem.getTotalPrice());
+
+                // Decrease the quantity of each item in the inventory
+                itemEntity item = cartItem.getItem();
+                if (item.getQuantity() >= cartItem.getQuantity()) {
+                    item.setQuantity(item.getQuantity() - cartItem.getQuantity());
+                    itemRepository.save(item);
+                } else {
+                    responseDTO.setCode("11");
+                    responseDTO.setMessage("Insufficient stock for item: " + item.getName());
+                    responseDTO.setStatus(HttpStatus.BAD_REQUEST);
+                    return responseDTO;
+                }
+
+                orderItemEntity savedOrderItem = orderItemRepository.save(orderItem);
+                orderItems.add(savedOrderItem);
+            }
+
+            Long totalPrice = cartService.calculateCartTotal(cart);
+            int totalItems = cartService.calculateCartTotalItems(cart);
+
+            newOrder.setItems(orderItems);
+            newOrder.setTotalPrice(totalPrice);
+            newOrder.setTotalItems(totalItems);
+
+            orderEntity savedOrder = orderRepository.save(newOrder);
+            // Clear the cart after order placement if needed
+            // cartService.clearCart(user.getId());
+
+            responseDTO.setCode("00");
+            responseDTO.setMessage("Order created successfully");
+            responseDTO.setStatus(HttpStatus.CREATED);
+            responseDTO.setContent(savedOrder);
+
+        } catch (Exception e) {
+            responseDTO.setCode("10");
+            responseDTO.setMessage("Internal server error");
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        shopEntity shop = shopService.findShopById(order.getShopId());
-
-        orderEntity newOrder = new orderEntity();
-        newOrder.setShopOwner(user);
-        newOrder.setShop(shop);
-        newOrder.setDescription(order.getDescription());
-        newOrder.setDeliveryAddress(savedAddress);
-        newOrder.setStatus("PENDING");
-        newOrder.setOrderDate(new Date());
-
-
-        cartEntity cart = cartService.findCartByUserId(user.getId());
-
-        List<orderItemEntity> orderItems = new ArrayList<>();
-
-        for(cartItemEntity cartItem : cart.getItems()){
-            orderItemEntity orderItem = new orderItemEntity();
-            orderItem.setItem(cartItem.getItem());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setTotalPrice(cartItem.getTotalPrice());
-
-            orderItemEntity savedOrderItem = orderItemRepository.save(orderItem);
-            orderItems.add(savedOrderItem);
-        }
-        Long totalPrice = cartService.calculateCartTotal(cart);
-        int totalItems = cartService.calculateCartTotalItems(cart);
-
-        newOrder.setItems(orderItems);
-        newOrder.setTotalPrice(totalPrice);
-        newOrder.setTotalItems(totalItems);
-
-        orderEntity savedOrder = orderRepository.save(newOrder);
-        //shop.getOrders().add(savedOrder);
-
-      //  cartService.clearCart(user.getId());
-
-        return newOrder;
+        return responseDTO;
     }
 
     @Override
@@ -136,3 +161,4 @@ public class OrderServiceImp implements OrderService{
     }
 
 }
+

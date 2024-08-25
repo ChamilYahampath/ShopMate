@@ -1,5 +1,6 @@
 package com.chamil.ShopMate.service;
 
+import com.chamil.ShopMate.dto.ResponseDTO;
 import com.chamil.ShopMate.model.orderEntity;
 import com.chamil.ShopMate.model.userEntity;
 import com.chamil.ShopMate.request.OrderRequest;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface OrderService {
 
-    public orderEntity createOrder(OrderRequest order, userEntity user) throws Exception;
+    public ResponseDTO createOrder(OrderRequest order, userEntity user) throws Exception;
 
     public orderEntity updateOrder(Long orderId, String orderStatus) throws Exception;
 

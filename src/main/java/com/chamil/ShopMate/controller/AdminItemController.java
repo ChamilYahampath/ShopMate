@@ -34,6 +34,19 @@ public class AdminItemController {
         return new ResponseEntity(responseDTO,responseDTO.getStatus());
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<itemEntity> updateItem(
+            @PathVariable Long id,
+            @RequestBody CreateItemRequest req,
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        userEntity user = userService.findUserByJwtToken(jwt);
+
+        itemEntity item = itemService.updateItem(id, req);
+
+        return new ResponseEntity<>(item, HttpStatus.CREATED);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteItem(
             @PathVariable Long id,

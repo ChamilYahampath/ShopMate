@@ -31,6 +31,4 @@ public class itemEntity {
     @ElementCollection // This annotation is used to store a list of strings in a single column
     private List<String> images;
 
-    private boolean available;
-
 }
